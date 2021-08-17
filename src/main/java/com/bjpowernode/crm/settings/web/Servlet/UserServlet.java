@@ -7,6 +7,7 @@ import com.bjpowernode.crm.untils.PrintJson;
 import com.bjpowernode.crm.untils.ServiceFactory;
 
 import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -21,7 +22,8 @@ public class UserServlet extends HttpServlet {
         request.setCharacterEncoding("UTF-8");
         System.out.println("进入控制器");
         String path = request.getServletPath();
-        if ("/settings/user/login.dao".equals(path)) {
+        System.out.println(path);
+        if ("/settings/user/login.do".equals(path)) {
             login(request,response);
         } else {
 

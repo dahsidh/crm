@@ -1,4 +1,5 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@page isELIgnored="false" %>
 <html>
 <head>
 	<base href="${pageContext.request.contextPath}/">
@@ -8,30 +9,34 @@
 <script type="text/javascript" src="jquery/bootstrap_3.3.0/js/bootstrap.min.js"></script>
 	<script type="text/javascript">
 		$(function (){
-			$("loginAct").value("");
+			$("#loginAct").val("");
 
 			$("#loginAct").focus();
 
-			$("#subbtn").click(function (){
+			$("#loginAct").focus(function (){
+				$("#msg").html("");
+			})
 
+			$("#subbtn").click(function (){
+				login();
 			})
 
 			$(window).keydown(function (event){
 				if (event.keyCode==13){
-
+					login();
 				}
 			})
 		})
 
 		function login(){
-			var loginAct = $.trim($("loginAct").val());
-			var loginPwd = $.trim($("loginPwd").val());
+			var loginAct = $.trim($("#loginAct").val());
+			var loginPwd = $.trim($("#loginPwd").val());
 			if(!loginAct || !loginPwd){
 				$("#msg").html("账号密码不能为空");
 				return false;
 			}
 			$.ajax({
-				url:"settings/user/login.dao",
+				url:"settings/user/login.do",
 				data:{
 					"loginAct":loginAct,
 					"loginPwd":loginPwd
@@ -39,7 +44,7 @@
 				type:"post",
 				dataType:"json",
 				success:function (data){
-					if (data.sucess){
+					if (data.success){
 						window.location.href="workbench/index.html";
 					}else {
 						$("#msg").html(data.msg);

@@ -3,13 +3,16 @@
  "http://java.sun.com/dtd/web-app_2_3.dtd" >
 
 <web-app>
+  <filter>
+    <filter-name>EncodingFilter</filter-name>
+    <filter-class>com.bjpowernode.crm.web.filter.EncodingFilter</filter-class>
+  </filter>
 
-  <display-name>crm</display-name>
-
-  <welcome-file-list>
-    <welcome-file>index.html</welcome-file>
-  </welcome-file-list>
-
+  <filter-mapping>
+    <filter-name>EncodingFilter</filter-name>
+    <url-pattern>z*.do</url-pattern>
+  </filter-mapping>
+  
   <servlet>
     <servlet-name>UserServlet</servlet-name>
     <servlet-class>com.bjpowernode.crm.settings.web.Servlet.UserServlet</servlet-class>
@@ -17,6 +20,10 @@
   
   <servlet-mapping>
     <servlet-name>UserServlet</servlet-name>
-    <url-pattern>/settings/user/save.do</url-pattern>
+    <url-pattern>/settings/user/login.do</url-pattern>
   </servlet-mapping>
+
+  <welcome-file-list>
+    <welcome-file>index.html</welcome-file>
+  </welcome-file-list>
 </web-app>
