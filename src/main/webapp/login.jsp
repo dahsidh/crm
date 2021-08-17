@@ -39,7 +39,7 @@
 				type:"post",
 				dataType:"json",
 				success:function (data){
-					if (data.sucess){
+					if (data.success){
 						window.location.href="workbench/index.html";
 					}else {
 						$("#msg").html(data.msg);
