@@ -19,10 +19,7 @@ import com.bjpowernode.crm.settings.servce.UserServce;
 public class UserServlet extends HttpServlet {
     @Override
     protected void service(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        request.setCharacterEncoding("UTF-8");
-        System.out.println("进入控制器");
         String path = request.getServletPath();
-        System.out.println(path);
         if ("/settings/user/login.do".equals(path)) {
             login(request,response);
         } else {
@@ -35,7 +32,6 @@ public class UserServlet extends HttpServlet {
         String loginPwd = request.getParameter("loginPwd");
         String ip = request.getRemoteAddr();
         UserServce userServce = (UserServce) ServiceFactory.getService(new UserServceImpl());
-
         try {
             User user = userServce.login(loginAct, loginPwd, ip);
             request.getSession().setAttribute("user", user);

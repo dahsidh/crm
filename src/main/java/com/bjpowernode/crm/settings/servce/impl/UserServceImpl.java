@@ -5,6 +5,7 @@ import com.bjpowernode.crm.settings.dao.UserDao;
 import com.bjpowernode.crm.settings.eneity.User;
 import com.bjpowernode.crm.settings.servce.UserServce;
 import com.bjpowernode.crm.untils.DateTimeUntil;
+import com.bjpowernode.crm.untils.MD5Until;
 import com.bjpowernode.crm.untils.SqlSessionUtil;
 
 import java.util.HashMap;
@@ -17,7 +18,7 @@ public class UserServceImpl implements UserServce {
     public User login(String loginAct, String loginPwd, String ip) throws LoginException {
         HashMap<String, String> hashMap = new HashMap<>();
         hashMap.put("loginAct", loginAct);
-        hashMap.put("loginPwd", loginPwd);
+        hashMap.put("loginPwd", MD5Until.getMD5(loginPwd));
         User user = userDao.login(hashMap);
         if (user == null)
             throw new LoginException("账号密码错误");
