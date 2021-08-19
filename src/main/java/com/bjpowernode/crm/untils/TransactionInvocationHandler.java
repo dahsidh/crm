@@ -32,8 +32,6 @@ public class TransactionInvocationHandler implements InvocationHandler{
 		}catch(Exception e){
 			session.rollback();
 			e.printStackTrace();
-			
-			//处理的是什么异常，继续往上抛什么异常
 			throw e.getCause();
 		}finally{
 			SqlSessionUtil.myClose(session);
@@ -43,9 +41,7 @@ public class TransactionInvocationHandler implements InvocationHandler{
 	}
 	
 	public Object getProxy(){
-		
 		return Proxy.newProxyInstance(target.getClass().getClassLoader(), target.getClass().getInterfaces(),this);
-		
 	}
 	
 }

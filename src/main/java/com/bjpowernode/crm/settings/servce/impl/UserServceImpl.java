@@ -9,6 +9,7 @@ import com.bjpowernode.crm.untils.MD5Until;
 import com.bjpowernode.crm.untils.SqlSessionUtil;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class UserServceImpl implements UserServce {
@@ -33,5 +34,10 @@ public class UserServceImpl implements UserServce {
         if (!user.getAllowIps().contains(ip))
             throw new LoginException("ip地址受限");
             return user;
+    }
+
+    @Override
+    public List<User> findUserAll() {
+        return userDao.findAll();
     }
 }
