@@ -3,11 +3,16 @@ package com.bjpowernode.crm.vo;
 import java.util.List;
 
 public class PaginationVO<T> {
-    private int total;
+    private long total;
     private List<T> dataList;
 
-    public int getTotal() {
+    public long getTotal() {
         return total;
+    }
+
+    public PaginationVO(long total, List<T> dataList) {
+        this.total = total;
+        this.dataList = dataList;
     }
 
     public void setTotal(int total) {

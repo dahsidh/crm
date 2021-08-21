@@ -7,6 +7,7 @@ import com.bjpowernode.crm.untils.DateTimeUntil;
 import com.bjpowernode.crm.untils.PrintJson;
 import com.bjpowernode.crm.untils.ServiceFactory;
 import com.bjpowernode.crm.untils.UUIDUntil;
+import com.bjpowernode.crm.vo.PaginationVO;
 import com.bjpowernode.crm.workbench.entity.Activity;
 import com.bjpowernode.crm.workbench.servce.ActivityServce;
 import com.bjpowernode.crm.workbench.servce.impl.ActivityServceImpl;
@@ -16,7 +17,9 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class ActivityServlet extends HttpServlet {
     @Override
@@ -26,23 +29,27 @@ public class ActivityServlet extends HttpServlet {
         if ("/workbench/activity/getUserList.do".equals(path)) {
             getUserList(request, response);
         } else if ("/workbench/activity/save.do".equals(path)) {
-            save(request,response);
-        } else if ("/workbench/activity/pageList.do".equals(path)){
-            pageList(request,response);
+            save(request, response);
+        } else if ("/workbench/activity/pageList.do".equals(path)) {
+            pageList(request, response);
         }
     }
 
     private void pageList(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        String name = request.getParameter("name");
-        String owner = request.getParameter("owner");
-        String StartDate = request.getParameter("startDate");
-        String endDate = request.getParameter("endDate");
+        ActivityServce servce = (ActivityServce) ServiceFactory.getService(new ActivityServceImpl());
+        int pageNo = Integer.parseInt(request.getParameter("pageNo"));
+        int pageSize = Integer.parseInt(request.getParameter("pageSize"));
 
-        String pageNoStr = request.getParameter("pageNo");
-        String pageSizeStr = request.getParameter("pageSize ");
-        int pageNo = Integer.parseInt(pageNoStr);
-        int pageSize = Integer.parseInt(pageSizeStr);
-        int skipCont  = (pageNo-1)*pageSize;
+        HashMap<String,Object> hashMap = new HashMap<>();
+        hashMap.put("name",request.getParameter("name"));
+        hashMap.put("owner",request.getParameter("owner"));
+        hashMap.put("startDate", request.getParameter("startDate"));
+        hashMap.put("endDate",request.getParameter("endDate"));
+        hashMap.put("skipCont",(pageNo - 1) * pageSize);
+        hashMap.put("pageSize",pageSize);
+        PaginationVO paginationVO = servce.pageList(hashMap);
+        PrintJson.printJsonObj(response,paginationVO);
+
 
     }
 
@@ -54,26 +61,19 @@ public class ActivityServlet extends HttpServlet {
 
     private void save(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         ActivityServce activityServce = (ActivityServce) ServiceFactory.getService(new ActivityServceImpl());
-        String id = UUIDUntil.getUUID();
-        String owner = request.getParameter("owner");
-        String name = request.getParameter("name");
-        String startDate = request.getParameter("startDate");
-        String endDate = request.getParameter("endDate");
-        String cost = request.getParameter("cost");
-        String description =request.getParameter("description");
         String createTime = DateTimeUntil.getSysTime();
-        String createBy = ((User)request.getSession().getAttribute("user")).getName();
+        String createBy = ((User) request.getSession().getAttribute("user")).getName();
         Activity activity = new Activity();
-        activity.setId(id);
-        activity.setName(name);
-        activity.setCost(cost);
+        activity.setId(UUIDUntil.getUUID());
+        activity.setName(request.getParameter("name"));
+        activity.setCost(request.getParameter("cost"));
         activity.setCreateBy(createBy);
         activity.setCreateTime(createTime);
-        activity.setDescription(description);
-        activity.setEndDate(endDate);
-        activity.setStartDate(startDate);
-        activity.setOwner(owner);
+        activity.setDescription(request.getParameter("description"));
+        activity.setEndDate(request.getParameter("endDate"));
+        activity.setStartDate( request.getParameter("startDate"));
+        activity.setOwner(request.getParameter("owner"));
         boolean flag = activityServce.save(activity);
-        PrintJson.printJsonFlag(response,flag);
+        PrintJson.printJsonFlag(response, flag);
     }
 }
