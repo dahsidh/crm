@@ -17,21 +17,90 @@
 
 	$(function(){
 		$("#addBtn").click(function (){
-			var html = "";
+			$(".time").datetimepicker({
+				minVew:"month",
+				language:'zh-CN',
+				format:'yyyy-mm-dd',
+				autoclose:true,
+				todayBtn:true,
+				pickerPosition:"bottom-left"
+			});
+
 			$.ajax({
                 url:"workbench/activity/getUserList.do",
                 type:"post",
 				dataType:"json",
                 success:function (data){
+					var html = "";
                 	$.each(data,function (i,n){
-                		html += "<option value='"+n.id+"'>"+n.name+"<option>";
+                		html += "<option value='"+n.id+"'>"+n.name+"<option>"
 					})
 					$("#create-owner").html(html);
+                	$("#create-owner").val("${sessionScope.user.id}");
 					$("#createActivityModal").modal("show");
                 }
             })
 		})
+
+		$("#saveBtn").click(function (){
+			$.ajax({
+				url: "workbench/activity/save.do",
+				data:{
+					"owner" : $.trim($("#create-owner").val()),
+					"name":$.trim($("#create-name").val()),
+					"startDate":$.trim($("#create-startDate").val()),
+					"endDate":$.trim($("#create-endDate").val()),
+					"cost":$.trim($("#create-cost").val()),
+					"description":$.trim($("#create-description").val()),
+				},
+				type:"post",
+				dataType:"json",
+				success:function (data){
+					if (data.success){
+						$("#activiFrom")[0].result();
+						$("#createActivityModal").modal("hide")
+					}else{
+						alert("false");
+					}
+				}
+			})
+		})
+		pageList(1,2);
+		$("#search-btn")
+
+
 	});
+
+	function pageList(pageNo,pageSize){
+		$.ajax({
+			url:"workbench/activity/pageList.do",
+			data:{
+				"pageNo":pageNo,
+				"pageSize":pageSize,
+				"name":$.trim($("#search-name").val()),
+				"owner":$.trim($("#search-owne").val()),
+				"startDate":$.trim($("#search-startDate").val()),
+				"endDate":$.trim($("#search-endDate").val())
+			},
+			type:"get",
+			dataType:"json",
+			success:function (data){
+				var html = "";
+				$.each(data, function (i,n){
+					html+='<tr class="active">'
+					html+='<td><input type="checkbox" value="'+n.id+'"/></td>'
+					html+='<td><a style="text-decoration: none; cursor: pointer;"'
+					html+='onclick="window.location.href=\'detail.html\';">'+n.name+'</a></td>'
+					html+='<td>'+n.owner+'</td>'
+					html+='<td>'+n.startDate+'</td>'
+					html+='<td>'+n.endDate+'</td>'
+					html+='</tr>';
+
+				})
+				$("#activityBody").html(html);
+			}
+		})
+	}
 	
 </script>
 </head>
@@ -49,31 +118,28 @@
 				</div>
 				<div class="modal-body">
 				
-					<form class="form-horizontal" role="form">
+					<form class="form-horizontal" role="form" id="activiFrom">
 					
 						<div class="form-group">
 							<label for="create-marketActivityOwner" class="col-sm-2 control-label">所有者<span style="font-size: 15px; color: red;">*</span></label>
 							<div class="col-sm-10" style="width: 300px;">
 								<select class="form-control" id="create-owner">
-								  <option>zhangsan</option>
-								  <option>lisi</option>
-								  <option>wangwu</option>
 								</select>
 							</div>
                             <label for="create-marketActivityName" class="col-sm-2 control-label">名称<span style="font-size: 15px; color: red;">*</span></label>
                             <div class="col-sm-10" style="width: 300px;">
-                                <input type="text" class="form-control" id="create-marketActivityName">
+                                <input type="text" class="form-control" id="create-name">
                             </div>
 						</div>
 						
 						<div class="form-group">
 							<label for="create-startTime" class="col-sm-2 control-label">开始日期</label>
 							<div class="col-sm-10" style="width: 300px;">
-								<input type="text" class="form-control" id="create-startTime">
+								<input type="text" class="form-control time" id="create-startDate" readonly>
 							</div>
 							<label for="create-endTime" class="col-sm-2 control-label">结束日期</label>
 							<div class="col-sm-10" style="width: 300px;">
-								<input type="text" class="form-control" id="create-endTime">
+								<input type="text" class="form-control time" id="create-endDate" readonly>
 							</div>
 						</div>
                         <div class="form-group">
@@ -86,7 +152,7 @@
 						<div class="form-group">
 							<label for="create-describe" class="col-sm-2 control-label">描述</label>
 							<div class="col-sm-10" style="width: 81%;">
-								<textarea class="form-control" rows="3" id="create-describe"></textarea>
+								<textarea class="form-control" rows="3" id="create-description"></textarea>
 							</div>
 						</div>
 						
@@ -95,7 +161,7 @@
 				</div>
 				<div class="modal-footer">
 					<button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
-					<button type="button" class="btn btn-primary" data-dismiss="modal">保存</button>
+					<button type="button" class="btn btn-primary" id="saveBtn">保存</button>
 				</div>
 			</div>
 		</div>
@@ -119,9 +185,6 @@
 							<label for="edit-marketActivityOwner" class="col-sm-2 control-label">所有者<span style="font-size: 15px; color: red;">*</span></label>
 							<div class="col-sm-10" style="width: 300px;">
 								<select class="form-control" id="edit-marketActivityOwner">
-								  <option>zhangsan</option>
-								  <option>lisi</option>
-								  <option>wangwu</option>
 								</select>
 							</div>
                             <label for="edit-marketActivityName" class="col-sm-2 control-label">名称<span style="font-size: 15px; color: red;">*</span></label>
@@ -184,14 +247,14 @@
 				  
 				  <div class="form-group">
 				    <div class="input-group">
-				      <div class="input-group-addon">名称</div>
+				      <div class="input-group-addon" id="search-name">名称</div>
 				      <input class="form-control" type="text">
 				    </div>
 				  </div>
 				  
 				  <div class="form-group">
 				    <div class="input-group">
-				      <div class="input-group-addon">所有者</div>
+				      <div class="input-group-addon" id="search-owne">所有者</div>
 				      <input class="form-control" type="text">
 				    </div>
 				  </div>
@@ -200,17 +263,17 @@
 				  <div class="form-group">
 				    <div class="input-group">
 				      <div class="input-group-addon">开始日期</div>
-					  <input class="form-control" type="text" id="startTime" />
+					  <input class="form-control" type="text" id="search-startDate" />
 				    </div>
 				  </div>
 				  <div class="form-group">
 				    <div class="input-group">
 				      <div class="input-group-addon">结束日期</div>
-					  <input class="form-control" type="text" id="endTime">
+					  <input class="form-control" type="text" id="search-endDate">
 				    </div>
 				  </div>
 				  
-				  <button type="submit" class="btn btn-default">查询</button>
+				  <button type="button" id="search-btn" class="btn btn-default">查询</button>
 				  
 				</form>
 			</div>
@@ -233,21 +296,8 @@
 							<td>结束日期</td>
 						</tr>
 					</thead>
-					<tbody>
-						<tr class="active">
-							<td><input type="checkbox" /></td>
-							<td><a style="text-decoration: none; cursor: pointer;" onclick="window.location.href='detail.html';">发传单</a></td>
-                            <td>zhangsan</td>
-							<td>2020-10-10</td>
-							<td>2020-10-20</td>
-						</tr>
-                        <tr class="active">
-                            <td><input type="checkbox" /></td>
-                            <td><a style="text-decoration: none; cursor: pointer;" onclick="window.location.href='detail.html';">发传单</a></td>
-                            <td>zhangsan</td>
-                            <td>2020-10-10</td>
-                            <td>2020-10-20</td>
-                        </tr>
+					<tbody id="activityBody">
+
 					</tbody>
 				</table>
 			</div>

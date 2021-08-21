@@ -11,23 +11,16 @@ public class TransactionInvocationHandler implements InvocationHandler{
 	private Object target;
 	
 	public TransactionInvocationHandler(Object target){
-		
 		this.target = target;
-		
 	}
 
 	@Override
 	public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-		
 		SqlSession session = null;
-		
 		Object obj = null;
-		
 		try{
 			session = SqlSessionUtil.getSqlSession();
-			
 			obj = method.invoke(target, args);
-			
 			session.commit();
 		}catch(Exception e){
 			session.rollback();
@@ -36,7 +29,6 @@ public class TransactionInvocationHandler implements InvocationHandler{
 		}finally{
 			SqlSessionUtil.myClose(session);
 		}
-		
 		return obj;
 	}
 	
