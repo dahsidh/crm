@@ -32,7 +32,16 @@ public class ActivityServlet extends HttpServlet {
             save(request, response);
         } else if ("/workbench/activity/pageList.do".equals(path)) {
             pageList(request, response);
+        } else if ("/workbench/activity/delete.do".equals(path)) {
+            delete(request, response);
         }
+    }
+
+    private void delete(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        ActivityServce servce = (ActivityServce) ServiceFactory.getService(new ActivityServceImpl());
+        String[] ids = request.getParameterValues("par");
+        boolean flag = servce.deleteInfo(ids);
+        PrintJson.printJsonFlag(response,flag);
     }
 
     private void pageList(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -40,15 +49,15 @@ public class ActivityServlet extends HttpServlet {
         int pageNo = Integer.parseInt(request.getParameter("pageNo"));
         int pageSize = Integer.parseInt(request.getParameter("pageSize"));
 
-        HashMap<String,Object> hashMap = new HashMap<>();
-        hashMap.put("name",request.getParameter("name"));
-        hashMap.put("owner",request.getParameter("owner"));
+        HashMap<String, Object> hashMap = new HashMap<>();
+        hashMap.put("name", request.getParameter("name"));
+        hashMap.put("owner", request.getParameter("owner"));
         hashMap.put("startDate", request.getParameter("startDate"));
-        hashMap.put("endDate",request.getParameter("endDate"));
-        hashMap.put("skipCont",(pageNo - 1) * pageSize);
-        hashMap.put("pageSize",pageSize);
+        hashMap.put("endDate", request.getParameter("endDate"));
+        hashMap.put("skipCont", (pageNo - 1) * pageSize);
+        hashMap.put("pageSize", pageSize);
         PaginationVO paginationVO = servce.pageList(hashMap);
-        PrintJson.printJsonObj(response,paginationVO);
+        PrintJson.printJsonObj(response, paginationVO);
 
 
     }
@@ -71,7 +80,7 @@ public class ActivityServlet extends HttpServlet {
         activity.setCreateTime(createTime);
         activity.setDescription(request.getParameter("description"));
         activity.setEndDate(request.getParameter("endDate"));
-        activity.setStartDate( request.getParameter("startDate"));
+        activity.setStartDate(request.getParameter("startDate"));
         activity.setOwner(request.getParameter("owner"));
         boolean flag = activityServce.save(activity);
         PrintJson.printJsonFlag(response, flag);

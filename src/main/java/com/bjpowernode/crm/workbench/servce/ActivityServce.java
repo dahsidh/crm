@@ -10,4 +10,6 @@ public interface  ActivityServce {
     boolean save(Activity activity);
 
     PaginationVO pageList(HashMap<String, Object> hashMap);
+
+    boolean deleteInfo(String[] ids);
 }

@@ -4,11 +4,15 @@ import com.bjpowernode.crm.workbench.entity.Activity;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public interface ActivityDao {
     int save(Activity activity);
 
-    List<Activity> getActivityListByCondition(HashMap<String, Object> hashMap);
+    List<Activity> getActivityListByCondition(Map hashMap);
 
-    long getTotalByCondition();
+    long getTotalByCondition(Map hashMap);
+
+
+    int deleteByActivity(String[] ids);
 }

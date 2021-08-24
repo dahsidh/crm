@@ -23,6 +23,7 @@ public class SqlSessionUtil {
             inputStream = Resources.getResourceAsStream(resource);
         } catch (IOException e) {
             e.printStackTrace();
+
         }
         factory = new SqlSessionFactoryBuilder().build(inputStream);
 
