@@ -75,8 +75,8 @@
 
     <delete id="deleteByActivity">
         delete from tbl_activity where id in
-        <foreach collection="id" item="i" open="(" close=")" separator=",">
-           #{i}
+        <foreach collection="array" item="ids" open="(" close=")" separator=",">
+           #{ids}
         </foreach>
     </delete>
 

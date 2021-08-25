@@ -4,17 +4,18 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.bjpowernode.crm.workbench.dao.ActivityRemarkDao">
     <select id="selectCountByRemarks" resultType="int">
-        select count (*) from tbl_activity_remark
+        select count(*) from tbl_activity_remark
         where activityId in
-        <foreach collection="aid" item="ac" open="(" close=")" separator=",">
-            #{ac}
+        <foreach collection="array" item="ids" open="(" close=")" separator=",">
+            #{ids}
         </foreach>
     </select>
 
     <delete id="deleteByInfo">
-        delete from tbl_activity_remark where activityId in
-        <foreach collection="did" item="d" open="(" close=")" separator=",">
-            #{d}
+        delete from tbl_activity_remark where activityId
+        in
+        <foreach collection="array" item="ids" open="(" close=")" separator=",">
+            #{ids}
         </foreach>
     </delete>
 </mapper>

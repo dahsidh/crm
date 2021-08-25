@@ -39,7 +39,7 @@ public class ActivityServlet extends HttpServlet {
 
     private void delete(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         ActivityServce servce = (ActivityServce) ServiceFactory.getService(new ActivityServceImpl());
-        String[] ids = request.getParameterValues("par");
+        String[] ids = request.getParameterValues("id");
         boolean flag = servce.deleteInfo(ids);
         PrintJson.printJsonFlag(response,flag);
     }
