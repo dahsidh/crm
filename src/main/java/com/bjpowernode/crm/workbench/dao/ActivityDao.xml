@@ -47,13 +47,13 @@
 
     <select id="getActivityListByCondition" resultType="com.bjpowernode.crm.workbench.entity.Activity">
         SELECT a.id,
-               a.name,
-               u.name AS OWNER,
-               a.startDate,
-               a.endDate
+        a.name,
+        u.name AS OWNER,
+        a.startDate,
+        a.endDate
         FROM tbl_activity a
-                INNER JOIN tbl_user u
-                ON a.owner = u.id
+        INNER JOIN tbl_user u
+        ON a.owner = u.id
 
         <where>
             <if test="name!=null and name!=''">
@@ -70,14 +70,50 @@
             </if>
         </where>
         order by a.createTime desc
-        limit  #{skipCont},#{pageSize}
+        limit #{skipCont},#{pageSize}
     </select>
 
     <delete id="deleteByActivity">
         delete from tbl_activity where id in
         <foreach collection="array" item="ids" open="(" close=")" separator=",">
-           #{ids}
+            #{ids}
         </foreach>
     </delete>
+
+    <select id="getById" resultType="com.bjpowernode.crm.workbench.entity.Activity">
+        select *
+        from tbl_activity
+        where id = #{id}
+    </select>
+
+    <update id="updateInfo">
+        update tbl_activity
+        set owner=#{owner},
+            name=#{name},
+            startDate=#{startDate},
+            endDate=#{endDate},
+            cost=#{cost},
+            description=#{description}
+        where id=#{id}
+    </update>
+
+    <select id="detailById" resultType="com.bjpowernode.crm.workbench.entity.Activity">
+        select
+            a.id,
+            u.name as owner,
+            a.name,
+            a.startDate,
+            a.endDate,
+            a.cost,
+            a.description,
+            a.createTime,
+             a.createBy,
+            a.editTime,
+            a.editBy
+        from tbl_activity a
+        join tbl_user u
+        on a.owner=u.id
+        where a.id=#{id}
+    </select>
 
 </mapper>

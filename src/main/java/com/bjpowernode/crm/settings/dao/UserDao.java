@@ -10,4 +10,6 @@ public interface UserDao {
     User login(HashMap<String, String> hashMap);
 
     List<User> findAll();
+
+
 }

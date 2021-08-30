@@ -9,6 +9,7 @@ import com.bjpowernode.crm.untils.ServiceFactory;
 import com.bjpowernode.crm.untils.UUIDUntil;
 import com.bjpowernode.crm.vo.PaginationVO;
 import com.bjpowernode.crm.workbench.entity.Activity;
+import com.bjpowernode.crm.workbench.entity.ActivityRemark;
 import com.bjpowernode.crm.workbench.servce.ActivityServce;
 import com.bjpowernode.crm.workbench.servce.impl.ActivityServceImpl;
 
@@ -34,14 +35,68 @@ public class ActivityServlet extends HttpServlet {
             pageList(request, response);
         } else if ("/workbench/activity/delete.do".equals(path)) {
             delete(request, response);
+        } else if ("/workbench/activity/getUserListAndActivity.do".equals(path)) {
+            getUserListAndActivity(request, response);
+        } else if ("/workbench/activity/update.do".equals(path)) {
+            update(request, response);
+        }else if ("/workbench/activity/detail.do".equals(path)) {
+            detail(request, response);
+        }else if ("/workbench/activity/getRemarkListByAid.do".equals(path)){
+            getRemarkListByAid(request,response);
+        }else if ("/workbench/activity/deleteRemark.do".equals(path)){
+            deleteRemark(request,response);
         }
+    }
+
+    private void deleteRemark(HttpServletRequest request, HttpServletResponse response) {
+        String id = request.getParameter("id");
+        ActivityServce activityServce = (ActivityServce) ServiceFactory.getService(new ActivityServceImpl());
+        boolean flag = activityServce.deleteRemark(id);
+        PrintJson.printJsonFlag(response,flag);
+    }
+
+    private void getRemarkListByAid(HttpServletRequest request, HttpServletResponse response) {
+        String id = request.getParameter("activityId");
+        ActivityServce activityServce = (ActivityServce) ServiceFactory.getService(new ActivityServceImpl());
+        List<ActivityRemark> list = activityServce.getRemarkListByAid(id);
+        PrintJson.printJsonObj(response,list);
+    }
+
+    private void detail(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        String id = request.getParameter("id");
+        ActivityServce activityServce = (ActivityServce) ServiceFactory.getService(new ActivityServceImpl());
+        Activity activity = activityServce.getdetail(id);
+        request.setAttribute("a",activity);
+        request.getRequestDispatcher("/workbench/activity/detail.jsp").forward(request,response);
+    }
+
+    private void update(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        ActivityServce activityServce = (ActivityServce) ServiceFactory.getService(new ActivityServceImpl());
+        Activity activity = new Activity();
+        activity.setId(request.getParameter("id"));
+        activity.setName(request.getParameter("name"));
+        activity.setCost(request.getParameter("cost"));
+        activity.setDescription(request.getParameter("description"));
+        activity.setEndDate(request.getParameter("endDate"));
+        activity.setStartDate(request.getParameter("startDate"));
+        activity.setOwner(request.getParameter("owner"));
+        boolean flag = activityServce.update(activity);
+        PrintJson.printJsonFlag(response, flag);
+
+    }
+
+    private void getUserListAndActivity(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        String id = request.getParameter("id");
+        ActivityServce activityServce = (ActivityServce) ServiceFactory.getService(new ActivityServceImpl());
+        Map<String, Object> map = activityServce.getUserListAndActivity(id);
+        PrintJson.printJsonObj(response, map);
     }
 
     private void delete(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         ActivityServce servce = (ActivityServce) ServiceFactory.getService(new ActivityServceImpl());
         String[] ids = request.getParameterValues("id");
         boolean flag = servce.deleteInfo(ids);
-        PrintJson.printJsonFlag(response,flag);
+        PrintJson.printJsonFlag(response, flag);
     }
 
     private void pageList(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {

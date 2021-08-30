@@ -18,4 +18,8 @@
             #{ids}
         </foreach>
     </delete>
+
+    <select id="getRemarkListByAid" resultType="com.bjpowernode.crm.workbench.entity.ActivityRemark">
+        select * from tbl_activity_remark where activityId=#{id}
+    </select>
 </mapper>

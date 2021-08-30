@@ -1,19 +1,24 @@
 package com.bjpowernode.crm.workbench.servce.impl;
 
+import com.bjpowernode.crm.settings.dao.UserDao;
+import com.bjpowernode.crm.settings.eneity.User;
 import com.bjpowernode.crm.untils.SqlSessionUtil;
 import com.bjpowernode.crm.vo.PaginationVO;
 import com.bjpowernode.crm.workbench.dao.ActivityDao;
 import com.bjpowernode.crm.workbench.dao.ActivityRemarkDao;
 import com.bjpowernode.crm.workbench.entity.Activity;
+import com.bjpowernode.crm.workbench.entity.ActivityRemark;
 import com.bjpowernode.crm.workbench.servce.ActivityServce;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 
 public class ActivityServceImpl implements ActivityServce {
     private ActivityDao activityDao = SqlSessionUtil.getSqlSession().getMapper(ActivityDao.class);
     private ActivityRemarkDao remarkDao = SqlSessionUtil.getSqlSession().getMapper(ActivityRemarkDao.class);
+    private UserDao userDao = SqlSessionUtil.getSqlSession().getMapper(UserDao.class);
 
     @Override
     public boolean save(Activity activity) {
@@ -28,6 +33,37 @@ public class ActivityServceImpl implements ActivityServce {
 
     @Override
     public boolean deleteInfo(String[] ids) {
-        return remarkDao.selectCountByRemarks(ids) == remarkDao.deleteByInfo(ids) && activityDao.deleteByActivity(ids) == ids.length;
+        return remarkDao.selectCountByRemarks(ids) == remarkDao.deleteByInfo(ids)
+                && activityDao.deleteByActivity(ids) == ids.length;
+    }
+
+    @Override
+    public Map<String, Object> getUserListAndActivity(String id) {
+        List<User> uList = userDao.findAll();
+        Activity a = activityDao.getById(id);
+        Map<String, Object> map = new HashMap<>();
+        map.put("uList", uList);
+        map.put("a", a);
+        return map;
+    }
+
+    @Override
+    public boolean update(Activity activity) {
+        return activityDao.updateInfo(activity) > 0;
+    }
+
+    @Override
+    public Activity getdetail(String id) {
+        return activityDao.detailById(id);
+    }
+
+    @Override
+    public List<ActivityRemark> getRemarkListByAid(String id) {
+        return remarkDao.getRemarkListByAid(id);
+    }
+
+    @Override
+    public boolean deleteRemark(String id) {
+        return remarkDao.deleteByInfo(new String[]{id}) > 0;
     }
 }
