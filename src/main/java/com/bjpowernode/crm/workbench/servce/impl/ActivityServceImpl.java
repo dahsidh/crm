@@ -64,6 +64,18 @@ public class ActivityServceImpl implements ActivityServce {
 
     @Override
     public boolean deleteRemark(String id) {
-        return remarkDao.deleteByInfo(new String[]{id}) > 0;
+        return remarkDao.deleteRemarkById(id) > 0;
     }
+
+    @Override
+    public boolean saveReark(ActivityRemark remark) {
+        return remarkDao.saveReark(remark) > 0;
+    }
+
+    @Override
+    public boolean updateRemark(ActivityRemark remark) {
+        return remarkDao.updateRemark(remark) > 0;
+    }
+
+
 }

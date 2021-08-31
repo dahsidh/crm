@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 
 public class ActivityServlet extends HttpServlet {
     @Override
@@ -39,35 +40,69 @@ public class ActivityServlet extends HttpServlet {
             getUserListAndActivity(request, response);
         } else if ("/workbench/activity/update.do".equals(path)) {
             update(request, response);
-        }else if ("/workbench/activity/detail.do".equals(path)) {
+        } else if ("/workbench/activity/detail.do".equals(path)) {
             detail(request, response);
-        }else if ("/workbench/activity/getRemarkListByAid.do".equals(path)){
-            getRemarkListByAid(request,response);
-        }else if ("/workbench/activity/deleteRemark.do".equals(path)){
-            deleteRemark(request,response);
+        } else if ("/workbench/activity/getRemarkListByAid.do".equals(path)) {
+            getRemarkListByAid(request, response);
+        } else if ("/workbench/activity/deleteRemark.do".equals(path)) {
+            deleteRemark(request, response);
+        } else if ("/workbench/activity/saveReark.do".equals(path)) {
+            saveReark(request, response);
+        } else if ("/workbench/activity/updateRemark.do".equals(path)) {
+            updateRemark(request, response);
         }
     }
 
-    private void deleteRemark(HttpServletRequest request, HttpServletResponse response) {
-        String id = request.getParameter("id");
+    private void updateRemark(HttpServletRequest request, HttpServletResponse response) {
         ActivityServce activityServce = (ActivityServce) ServiceFactory.getService(new ActivityServceImpl());
-        boolean flag = activityServce.deleteRemark(id);
-        PrintJson.printJsonFlag(response,flag);
+        ActivityRemark remark = new ActivityRemark();
+        remark.setId(request.getParameter("id"));
+        remark.setEditFlag("1");
+        remark.setNoteContent(request.getParameter("noteContent"));
+        remark.setEditBy(((User)request.getSession().getAttribute("user")).getName());
+        remark.setEditTime(DateTimeUntil.getSysTime());
+        HashMap<String,Object> map = new HashMap<>();
+        boolean flag = activityServce.updateRemark(remark);
+        map.put("success",flag);
+        map.put("a",remark);
+        PrintJson.printJsonObj(response,map);
+    }
+
+    private void saveReark(HttpServletRequest request, HttpServletResponse response) {
+        ActivityServce activityServce = (ActivityServce) ServiceFactory.getService(new ActivityServceImpl());
+        Map<String, Object> map = new HashMap<>();
+        ActivityRemark remark = new ActivityRemark();
+        remark.setActivityId(request.getParameter("activityId"));
+        remark.setId(UUIDUntil.getUUID());
+        remark.setNoteContent(request.getParameter("noteContent"));
+        remark.setEditFlag("0");
+        remark.setCreateTime(DateTimeUntil.getSysTime());
+        remark.setCreateBy(((User) request.getSession().getAttribute("user")).getName());
+        boolean flag = activityServce.saveReark(remark);
+        map.put("success", flag);
+        map.put("r", remark);
+        PrintJson.printJsonObj(response, map);
+    }
+
+    private void deleteRemark(HttpServletRequest request, HttpServletResponse response) {
+        ActivityServce activityServce = (ActivityServce) ServiceFactory.getService(new ActivityServceImpl());
+        boolean flag = activityServce.deleteRemark(request.getParameter("id"));
+        PrintJson.printJsonFlag(response, flag);
     }
 
     private void getRemarkListByAid(HttpServletRequest request, HttpServletResponse response) {
         String id = request.getParameter("activityId");
         ActivityServce activityServce = (ActivityServce) ServiceFactory.getService(new ActivityServceImpl());
         List<ActivityRemark> list = activityServce.getRemarkListByAid(id);
-        PrintJson.printJsonObj(response,list);
+        PrintJson.printJsonObj(response, list);
     }
 
     private void detail(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String id = request.getParameter("id");
         ActivityServce activityServce = (ActivityServce) ServiceFactory.getService(new ActivityServceImpl());
         Activity activity = activityServce.getdetail(id);
-        request.setAttribute("a",activity);
-        request.getRequestDispatcher("/workbench/activity/detail.jsp").forward(request,response);
+        request.setAttribute("a", activity);
+        request.getRequestDispatcher("/workbench/activity/detail.jsp").forward(request, response);
     }
 
     private void update(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {

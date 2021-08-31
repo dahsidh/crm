@@ -10,4 +10,10 @@ public interface ActivityRemarkDao {
     int selectCountByRemarks(String[] ids);
 
     List<ActivityRemark> getRemarkListByAid(String id);
+
+    int saveReark(ActivityRemark remark);
+
+    int deleteRemarkById(String id);
+
+    int updateRemark(ActivityRemark remark);
 }

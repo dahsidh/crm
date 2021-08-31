@@ -20,6 +20,38 @@
     </delete>
 
     <select id="getRemarkListByAid" resultType="com.bjpowernode.crm.workbench.entity.ActivityRemark">
-        select * from tbl_activity_remark where activityId=#{id}
+        select *
+        from tbl_activity_remark
+        where activityId = #{id}
     </select>
+
+
+    <insert id="saveReark">
+        insert into tbl_activity_remark(id,
+                                        noteContent,
+                                        createTime,
+                                        createBy,
+                                        editFlag,
+                                        activityId)
+        values (#{id},
+                #{noteContent},
+                #{createTime},
+                #{createBy},
+                #{editFlag},
+                #{activityId})
+    </insert>
+
+    <delete id="deleteRemarkById">
+        delete from tbl_activity_remark
+        where id=#{sid}
+    </delete>
+
+    <update id="updateRemark">
+        update tbl_activity_remark set
+            noteContent=#{noteContent},
+            editTime=#{editTime},
+            editBy=#{editBy},
+            editFlag=#{editFlag}
+        where id=#{id}
+    </update>
 </mapper>
